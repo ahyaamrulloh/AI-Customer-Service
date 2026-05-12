@@ -1,239 +1,490 @@
-<!-- Tambahkan link ikon agar muncul -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<!DOCTYPE html>
+<html lang="id">
 
-<style>
-/* Fallback Variables jika tidak ada di parent */
-:root {
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #f8f9fa;
-  --color-background-tertiary: #f1f3f9;
-  --color-border-tertiary: #e5e7eb;
-  --color-border-secondary: #d1d5db;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-tertiary: #9ca3af;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --border-radius-lg: 12px;
-}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopi Nusantara - AI Assistant</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); background-color: #f0f0f0; padding: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f0eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-#app { 
-    display: flex; 
-    flex-direction: column; 
-    max-width: 450px; /* Ukuran ideal chat */
-    margin: 0 auto;
-    height: 600px; 
-    background: var(--color-background-primary); 
-    border: 0.5px solid var(--color-border-tertiary); 
-    border-radius: var(--border-radius-lg); 
-    overflow: hidden; 
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-}
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 420px;
+      height: 620px;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    }
 
-#header { padding: 14px 18px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; gap: 12px; background: var(--color-background-primary); }
-#avatar { width: 36px; height: 36px; border-radius: 50%; background: #EEEDFE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-#avatar i { font-size: 18px; color: #534AB7; }
-#header-info p { font-size: 14px; font-weight: 600; color: var(--color-text-primary); }
-#header-info span { font-size: 12px; color: #1D9E75; display: flex; align-items: center; }
-#status-dot { width: 8px; height: 8px; background: #1D9E75; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    #header {
+      padding: 14px 18px;
+      border-bottom: 1px solid #e8ddd4;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #4A2C2A;
+    }
 
-#messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--color-background-tertiary); scroll-behavior: smooth; }
-.msg { display: flex; flex-direction: column; max-width: 80%; }
-.msg.user { align-self: flex-end; align-items: flex-end; }
-.msg.bot { align-self: flex-start; align-items: flex-start; }
+    #avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #7B4F3A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
 
-.bubble { padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-wrap: break-word; }
-.msg.user .bubble { background: #534AB7; color: #ffffff; border-bottom-right-radius: 4px; }
-.msg.bot .bubble { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); border-bottom-left-radius: 4px; }
+    #header-info p {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
 
-.msg-time { font-size: 10px; color: var(--color-text-tertiary); margin-top: 4px; padding: 0 4px; }
+    #header-info span {
+      font-size: 12px;
+      color: #c8a882;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-#typing { display: none; margin-bottom: 12px; }
-#typing .bubble { display: flex; gap: 4px; align-items: center; padding: 12px 16px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-tertiary); animation: bounce 1.2s infinite; }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-4px)} }
+    #status-dot {
+      width: 7px;
+      height: 7px;
+      background: #4CAF50;
+      border-radius: 50%;
+      display: inline-block;
+    }
 
-#suggested { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 16px; background: var(--color-background-tertiary); }
-.chip { font-size: 12px; padding: 6px 12px; border-radius: 16px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-.chip:hover { background: #EEEDFE; border-color: #AFA9EC; color: #534AB7; }
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #faf6f2;
+    }
 
-#input-area { padding: 12px 16px; border-top: 0.5px solid var(--color-border-tertiary); display: flex; gap: 10px; align-items: flex-end; background: var(--color-background-primary); }
-#msg-input { flex: 1; resize: none; border: 0.5px solid var(--color-border-secondary); border-radius: 20px; padding: 10px 16px; font-size: 14px; font-family: inherit; background: var(--color-background-secondary); color: var(--color-text-primary); outline: none; max-height: 100px; line-height: 1.4; }
-#send-btn { width: 38px; height: 38px; border-radius: 50%; background: #534AB7; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.1s; }
-#send-btn:active { transform: scale(0.9); }
-#send-btn i { font-size: 18px; color: #ffffff; }
-#send-btn:disabled { background: var(--color-border-secondary); cursor: not-allowed; }
-</style>
+    .msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 78%;
+    }
 
-<div id="app">
-  <div id="header">
-    <div id="avatar"><i class="ti ti-robot"></i></div>
-    <div id="header-info">
-      <p>AI Assistant</p>
-      <span><span id="status-dot"></span>Online</span>
+    .msg.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .msg.user .bubble {
+      background: #4A2C2A;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg.bot .bubble {
+      background: #fff;
+      border: 1px solid #e8ddd4;
+      color: #2c1a10;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg.bot .bubble a {
+      color: #25D366;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: #a08070;
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+
+    #typing {
+      display: none;
+      align-self: flex-start;
+    }
+
+    #typing .bubble {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #a08070;
+      animation: bounce 1.2s infinite;
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-6px)
+      }
+    }
+
+    #chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 16px;
+      background: #faf6f2;
+      border-top: 1px solid #e8ddd4;
+    }
+
+    .chip {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #c8a882;
+      background: #fff;
+      color: #7B4F3A;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      background: #4A2C2A;
+      color: #fff;
+      border-color: #4A2C2A;
+    }
+
+    #input-area {
+      padding: 12px 14px;
+      border-top: 1px solid #e8ddd4;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: #fff;
+    }
+
+    #msg-input {
+      flex: 1;
+      resize: none;
+      border: 1px solid #e8ddd4;
+      border-radius: 20px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      background: #faf6f2;
+      color: #2c1a10;
+      outline: none;
+      max-height: 100px;
+      line-height: 1.4;
+    }
+
+    #msg-input:focus {
+      border-color: #7B4F3A;
+    }
+
+    #send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #4A2C2A;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    #send-btn:hover {
+      background: #7B4F3A;
+    }
+
+    #send-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #send-btn:disabled {
+      background: #e8ddd4;
+      cursor: not-allowed;
+    }
+
+    #send-btn:disabled svg {
+      stroke: #a08070;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div id="header">
+      <div id="avatar">☕</div>
+      <div id="header-info">
+        <p>Kopi Nusantara Assistant</p>
+        <span><span id="status-dot"></span> Online</span>
+      </div>
     </div>
-  </div>
 
-  <div id="messages">
-    <!-- Pesan Awal -->
-    <div class="msg bot">
-      <div class="bubble">Halo! 👋 Saya AI Assistant. Ada yang bisa saya bantu hari ini?</div>
-      <span class="msg-time">Baru saja</span>
+    <div id="messages">
+      <div class="msg bot">
+        <div class="bubble">Halo! Selamat datang di Kopi Nusantara ☕
+          Saya siap membantu kamu dengan informasi menu, harga, promo, dan layanan kami. Ada yang bisa saya bantu?</div>
+        <span class="msg-time">Just now</span>
+      </div>
     </div>
 
-    <!-- Typing indicator dipindah ke dalam agar ikut scroll -->
     <div id="typing" class="msg bot">
-        <div class="bubble">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
+      <div class="bubble">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <div id="chips">
+      <div class="chip" onclick="sendChip(this)">Menu kopi</div>
+      <div class="chip" onclick="sendChip(this)">Harga minuman</div>
+      <div class="chip" onclick="sendChip(this)">Jam buka</div>
+      <div class="chip" onclick="sendChip(this)">Ada promo?</div>
+    </div>
+
+    <div id="input-area">
+      <textarea id="msg-input" placeholder="Ketik pesan..." rows="1"></textarea>
+      <button id="send-btn" onclick="sendMessage()" aria-label="Kirim">
+        <svg viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
     </div>
   </div>
 
-  <div id="suggested">
-    <div class="chip" onclick="sendChip(this)">Apa yang bisa kamu lakukan?</div>
-    <div class="chip" onclick="sendChip(this)">Harga produk</div>
-    <div class="chip" onclick="sendChip(this)">Cara order</div>
-  </div>
+  <script>
+    const BACKEND = 'http://localhost:8080';
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+    const typingEl = document.getElementById('typing');
+    const chipsEl = document.getElementById('chips');
 
-  <div id="input-area">
-    <textarea id="msg-input" placeholder="Ketik pesan..." rows="1"></textarea>
-    <button id="send-btn" onclick="sendMessage()" aria-label="Kirim pesan">
-      <i class="ti ti-send"></i>
-    </button>
-  </div>
-</div>
+    let threadId = null;
+    let isWaiting = false;
 
-<script>
-const messagesEl = document.getElementById('messages');
-const inputEl = document.getElementById('msg-input');
-const sendBtn = document.getElementById('send-btn');
-const typingEl = document.getElementById('typing');
-const suggestedEl = document.getElementById('suggested');
+    function getTime() {
+      return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
 
-const THREAD_ID_KEY = 'chatbot_thread_id';
-let threadId = null;
-let isWaiting = false;
+    function createBotBubble() {
+      const div = document.createElement('div');
+      div.className = 'msg bot';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      const time = document.createElement('span');
+      time.className = 'msg-time';
+      time.textContent = getTime();
+      div.appendChild(bubble);
+      div.appendChild(time);
+      messagesEl.appendChild(div);
+      return bubble;
+    }
 
-const demoReplies = {
-  "apa yang bisa kamu lakukan": "Saya bisa menjawab pertanyaan seputar produk, harga, cara order, dan informasi lainnya! 😊",
-  "harga produk": "Untuk informasi harga terbaru, silakan cek katalog di website kami atau tanyakan spesifik produknya.",
-  "cara order": "Cara order sangat mudah:\n1. Pilih produk\n2. Hubungi WhatsApp\n3. Konfirmasi pembayaran\n4. Selesai! 🚀",
-};
+    function appendUserMsg(text) {
+      const div = document.createElement('div');
+      div.className = 'msg user';
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      const time = document.createElement('span');
+      time.className = 'msg-time';
+      time.textContent = getTime();
+      div.appendChild(bubble);
+      div.appendChild(time);
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
-function getTime() {
-  return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-}
+    function setTyping(show) {
+      typingEl.style.display = show ? 'flex' : 'none';
+      if (show) messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
 
-function scrollToBottom() {
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
+    function cleanCitation(text) {
+      return text.replace(/【[^】]*】/g, '').replace(/\[\d+:\d+[^\]]*\]/g, '');
+    }
 
-function appendMsg(text, role) {
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-  bubble.style.whiteSpace = 'pre-wrap';
-  bubble.textContent = text;
-  
-  const time = document.createElement('span');
-  time.className = 'msg-time';
-  time.textContent = getTime();
-  
-  div.appendChild(bubble);
-  div.appendChild(time);
-  
-  // Masukkan sebelum elemen typing agar typing selalu di bawah
-  messagesEl.insertBefore(div, typingEl);
-  scrollToBottom();
-}
+    function escapeHtml(text) {
+      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
-function setTyping(show) {
-  typingEl.style.display = show ? 'flex' : 'none';
-  if (show) scrollToBottom();
-}
+    function formatMessage(text) {
+      let out = escapeHtml(text);
+      out = out.replace(
+        /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,
+        (match, label, url) => '<a href="' + url + '" target="_blank">' + label + '</a>'
+      );
+      out = out.replace(
+        /(\+62|62|0)([\s-]?8[\d\s-]{8,11})/g,
+        (match) => {
+          const clean = match.replace(/[\s-]/g, '').replace(/^0/, '62').replace(/^\+/, '');
+          return '<a href="https://wa.me/' + clean + '" target="_blank">' + match + '</a>';
+        }
+      );
+      return out;
+    }
 
-async function initThread() {
-  try {
-    const res = await fetch('http://localhost:8080/start');
-    const data = await res.json();
-    threadId = data.thread_id;
-    sessionStorage.setItem(THREAD_ID_KEY, threadId);
-  } catch {
-    console.warn("Backend tidak terdeteksi, masuk ke mode Demo.");
-    threadId = 'demo-mode';
-  }
-}
+    async function initThread() {
+      try {
+        const res = await fetch(`${BACKEND}/start`);
+        const data = await res.json();
+        threadId = data.thread_id;
+      } catch {
+        threadId = 'demo';
+      }
+    }
 
-async function sendMessage() {
-  const text = inputEl.value.trim();
-  if (!text || isWaiting) return;
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text || isWaiting) return;
 
-  // Sembunyikan chip setelah interaksi pertama
-  suggestedEl.style.display = 'none';
-  
-  appendMsg(text, 'user');
-  inputEl.value = '';
-  inputEl.style.height = 'auto';
-  
-  isWaiting = true;
-  sendBtn.disabled = true;
-  setTyping(true);
+      chipsEl.style.display = 'none';
+      appendUserMsg(text);
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+      isWaiting = true;
+      sendBtn.disabled = true;
+      setTyping(true);
 
-  if (threadId === 'demo-mode') {
-    await new Promise(r => setTimeout(r, 1500)); // Simulasi mikir
-    setTyping(false);
-    
-    // Normalisasi input (kecilkan huruf dan hapus tanda tanya)
-    const cleanKey = text.toLowerCase().replace(/\?|!/g, "").trim();
-    const reply = demoReplies[cleanKey] || "Maaf, saya belum mengerti pertanyaan itu. Bisa hubungi CS kami di nomor WA ya! 😊";
-    
-    appendMsg(reply, 'bot');
-    isWaiting = false;
-    sendBtn.disabled = false;
-    return;
-  }
+      if (!threadId || threadId === 'demo') {
+        await new Promise(r => setTimeout(r, 900));
+        setTyping(false);
+        const bubble = createBotBubble();
+        bubble.textContent = 'Maaf, tidak dapat terhubung ke server. Pastikan backend sudah berjalan di port 8080.';
+        isWaiting = false;
+        sendBtn.disabled = false;
+        return;
+      }
 
-  try {
-    const res = await fetch('http://localhost:8080/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ thread_id: threadId, message: text })
+      try {
+        const res = await fetch(`${BACKEND}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ thread_id: threadId, message: text })
+        });
+
+        setTyping(false);
+        const bubble = createBotBubble();
+        bubble.textContent = '';
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') break;
+            try {
+              const parsed = JSON.parse(data);
+              if (parsed.text) {
+                const raw = (bubble.dataset.raw || '') + cleanCitation(parsed.text);
+                bubble.dataset.raw = raw;
+                bubble.innerHTML = formatMessage(raw);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+              }
+            } catch { }
+          }
+        }
+
+      } catch (err) {
+        setTyping(false);
+        const bubble = createBotBubble();
+        bubble.textContent = 'Koneksi ke server gagal. Pastikan backend sudah berjalan.';
+      }
+
+      isWaiting = false;
+      sendBtn.disabled = false;
+    }
+
+    function sendChip(el) {
+      inputEl.value = el.textContent;
+      sendMessage();
+    }
+
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
-    const data = await res.json();
-    setTyping(false);
-    appendMsg(data.response || 'Maaf, terjadi kesalahan.', 'bot');
-  } catch {
-    setTyping(false);
-    appendMsg('Koneksi ke server gagal. Coba cek backend anda.', 'bot');
-  }
 
-  isWaiting = false;
-  sendBtn.disabled = false;
-}
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
+    });
 
-function sendChip(el) {
-  if (isWaiting) return;
-  inputEl.value = el.textContent;
-  sendMessage();
-}
+    initThread();
+  </script>
+</body>
 
-inputEl.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { 
-    e.preventDefault(); 
-    sendMessage(); 
-  }
-});
-
-inputEl.addEventListener('input', () => {
-  inputEl.style.height = 'auto';
-  inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
-});
-
-initThread();
-</script>
+</html>

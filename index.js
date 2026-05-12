@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 (async () => {
   const assistant = await createAssistant(openai);
+
   app.get("/start", async (req, res) => {
     const thread = await openai.beta.threads.create();
     return res.json({ thread_id: thread.id });
@@ -26,16 +27,39 @@ app.use(bodyParser.json());
       return res.status(400).json({ error: "Missing thread_id" });
     }
     console.log(`Received message: ${message} for thread ID: ${threadId}`);
+
     await openai.beta.threads.messages.create(threadId, {
       role: "user",
       content: message,
     });
-    const run = await openai.beta.threads.runs.createAndPoll(threadId, {
+
+    // Streaming response
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const stream = openai.beta.threads.runs.stream(threadId, {
       assistant_id: assistantId,
     });
-    const messages = await openai.beta.threads.messages.list(run.thread_id);
-    const response = messages.data[0].content[0].text.value;
-    return res.json({ response });
+
+    stream.on("textDelta", (delta) => {
+      // Filter citation patterns like 【16:2†knowledge.docx】
+      const clean = delta.value.replace(/【[^】]*】/g, "");
+      if (clean) {
+        res.write(`data: ${JSON.stringify({ text: clean })}\n\n`);
+      }
+    });
+
+    stream.on("end", () => {
+      res.write("data: [DONE]\n\n");
+      res.end();
+    });
+
+    stream.on("error", (err) => {
+      console.error("Stream error:", err);
+      res.write("data: [DONE]\n\n");
+      res.end();
+    });
   });
 
   app.listen(8080, () => {
