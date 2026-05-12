@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kopi Nusantara - AI Assistant</title>
+  <!-- Judul tab browser -->
+  <title>Coffee Nusantara - AI Assistant</title>
   <style>
     * {
       box-sizing: border-box;
@@ -53,6 +54,7 @@
       font-size: 18px;
     }
 
+    /* Nama assistant di header */
     #header-info p {
       font-size: 14px;
       font-weight: 600;
@@ -67,6 +69,7 @@
       gap: 4px;
     }
 
+    /* Indikator status online (titik hijau) */
     #status-dot {
       width: 7px;
       height: 7px;
@@ -110,12 +113,14 @@
       word-break: break-word;
     }
 
+    /* Bubble pesan dari user (kanan, cokelat tua) */
     .msg.user .bubble {
       background: #4A2C2A;
       color: #fff;
       border-bottom-right-radius: 4px;
     }
 
+    /* Bubble pesan dari bot (kiri, putih dengan border) */
     .msg.bot .bubble {
       background: #fff;
       border: 1px solid #e8ddd4;
@@ -123,6 +128,7 @@
       border-bottom-left-radius: 4px;
     }
 
+    /* Link di dalam bubble bot (untuk nomor WA dll) */
     .msg.bot .bubble a {
       color: #25D366;
       text-decoration: underline;
@@ -136,6 +142,7 @@
       padding: 0 4px;
     }
 
+    /* Animasi typing indicator (3 titik bergerak) */
     #typing {
       display: none;
       align-self: flex-start;
@@ -177,6 +184,7 @@
       }
     }
 
+    /* Area chips (tombol pertanyaan cepat) */
     #chips {
       display: flex;
       gap: 8px;
@@ -232,6 +240,7 @@
       border-color: #7B4F3A;
     }
 
+    /* Tombol kirim pesan */
     #send-btn {
       width: 38px;
       height: 38px;
@@ -273,22 +282,26 @@
 
 <body>
   <div id="app">
+    <!-- Header: nama brand dan status online -->
     <div id="header">
       <div id="avatar">☕</div>
       <div id="header-info">
-        <p>Assistant Kopi Nusantara</p>
+        <!-- Update: nama brand disesuaikan -->
+        <p>CS Coffee Nusantara</p>
         <span><span id="status-dot"></span> Online</span>
       </div>
     </div>
 
     <div id="messages">
+      <!-- Pesan sambutan awal dari bot, disesuaikan dengan brand Coffee Nusantara -->
       <div class="msg bot">
-        <div class="bubble">Halo! Selamat datang di Kopi Nusantara ☕
-          Saya siap membantu kamu dengan informasi menu, harga, promo, dan layanan kami. Ada yang bisa saya bantu?</div>
+        <div class="bubble">Halo! Selamat datang di Coffee Nusantara. Ada yang bisa saya bantu?
+        </div>
         <span class="msg-time">Just now</span>
       </div>
     </div>
 
+    <!-- Typing indicator: muncul saat bot sedang memproses jawaban -->
     <div id="typing" class="msg bot">
       <div class="bubble">
         <div class="dot"></div>
@@ -297,11 +310,13 @@
       </div>
     </div>
 
+    <!-- Chips: pertanyaan cepat yang relevan dengan produk Coffee Nusantara -->
     <div id="chips">
-      <div class="chip" onclick="sendChip(this)">Menu kopi</div>
-      <div class="chip" onclick="sendChip(this)">Harga minuman</div>
-      <div class="chip" onclick="sendChip(this)">Jam buka</div>
-      <div class="chip" onclick="sendChip(this)">Ada promo?</div>
+      <div class="chip" onclick="sendChip(this)">Produk apa saja?</div>
+      <div class="chip" onclick="sendChip(this)">Cara order</div>
+      <div class="chip" onclick="sendChip(this)">Jam operasional</div>
+      <div class="chip" onclick="sendChip(this)">Produk halal?</div>
+      <div class="chip" onclick="sendChip(this)">Info pengiriman</div>
     </div>
 
     <div id="input-area">
@@ -316,20 +331,29 @@
   </div>
 
   <script>
+    // Mengambil base URL backend dari origin halaman ini (relatif)
     const BACKEND = window.location.origin;
+
+    // Referensi ke elemen-elemen DOM yang sering diakses
     const messagesEl = document.getElementById('messages');
     const inputEl = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const typingEl = document.getElementById('typing');
     const chipsEl = document.getElementById('chips');
 
+    // Menyimpan thread_id aktif untuk sesi percakapan ini
     let threadId = null;
+
+    // Flag untuk mencegah pengiriman pesan ganda saat bot masih merespons
     let isWaiting = false;
 
+    // Mengembalikan waktu sekarang dalam format HH:MM (Indonesia)
     function getTime() {
       return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
 
+    // Membuat elemen bubble kosong untuk pesan bot, lalu menambahkannya ke area chat
+    // Mengembalikan referensi ke elemen bubble agar teks bisa diisi secara streaming
     function createBotBubble() {
       const div = document.createElement('div');
       div.className = 'msg bot';
@@ -344,6 +368,7 @@
       return bubble;
     }
 
+    // Menambahkan bubble pesan user (kanan) ke area chat
     function appendUserMsg(text) {
       const div = document.createElement('div');
       div.className = 'msg user';
@@ -356,28 +381,40 @@
       div.appendChild(bubble);
       div.appendChild(time);
       messagesEl.appendChild(div);
+      // Scroll otomatis ke bawah agar pesan terbaru terlihat
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
+    // Menampilkan atau menyembunyikan animasi typing (3 titik bergerak)
     function setTyping(show) {
       typingEl.style.display = show ? 'flex' : 'none';
       if (show) messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
+    // Menghapus pola citation seperti 【16:2†knowledge.docx】 dari teks bot
     function cleanCitation(text) {
       return text.replace(/【[^】]*】/g, '').replace(/\[\d+:\d+[^\]]*\]/g, '');
     }
 
+    // Mengubah karakter HTML khusus menjadi entitas HTML untuk mencegah XSS
     function escapeHtml(text) {
-      return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
     }
 
+    // Memformat teks bot: mengubah nomor WA dan link markdown menjadi tag <a> yang bisa diklik
     function formatMessage(text) {
       let out = escapeHtml(text);
+
+      // Ubah format markdown link [label](url) menjadi <a href>
       out = out.replace(
         /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,
         (match, label, url) => '<a href="' + url + '" target="_blank">' + label + '</a>'
       );
+
+      // Ubah nomor WhatsApp Indonesia menjadi link wa.me yang langsung bisa diklik
       out = out.replace(
         /(\+62|62|0)([\s-]?8[\d\s-]{8,11})/g,
         (match) => {
@@ -385,31 +422,41 @@
           return '<a href="https://wa.me/' + clean + '" target="_blank">' + match + '</a>';
         }
       );
+
       return out;
     }
 
+    // Memanggil endpoint /start untuk mendapatkan thread_id baru saat halaman pertama dibuka
     async function initThread() {
       try {
         const res = await fetch(`${BACKEND}/start`);
         const data = await res.json();
         threadId = data.thread_id;
       } catch {
+        // Jika gagal konek ke backend, set threadId ke 'demo' sebagai fallback
         threadId = 'demo';
       }
     }
 
+    // Fungsi utama: mengirim pesan user ke backend dan menampilkan streaming response dari bot
     async function sendMessage() {
       const text = inputEl.value.trim();
+
+      // Abaikan jika input kosong atau bot masih memproses pesan sebelumnya
       if (!text || isWaiting) return;
 
+      // Sembunyikan chips setelah user mulai mengetik
       chipsEl.style.display = 'none';
+
       appendUserMsg(text);
       inputEl.value = '';
       inputEl.style.height = 'auto';
+
       isWaiting = true;
       sendBtn.disabled = true;
       setTyping(true);
 
+      // Tampilkan error jika koneksi ke backend gagal saat init
       if (!threadId || threadId === 'demo') {
         await new Promise(r => setTimeout(r, 900));
         setTyping(false);
@@ -421,6 +468,7 @@
       }
 
       try {
+        // Kirim pesan ke endpoint /chat via POST
         const res = await fetch(`${BACKEND}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -431,6 +479,7 @@
         const bubble = createBotBubble();
         bubble.textContent = '';
 
+        // Membaca response streaming (SSE) kata per kata
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -439,8 +488,11 @@
           const { done, value } = await reader.read();
           if (done) break;
 
+          // Decode chunk binary menjadi string, stream: true agar multi-byte char aman
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
+
+          // Sisakan baris terakhir di buffer jika belum lengkap (belum ada \n)
           buffer = lines.pop();
 
           for (const line of lines) {
@@ -450,6 +502,7 @@
             try {
               const parsed = JSON.parse(data);
               if (parsed.text) {
+                // Akumulasi teks ke dataset.raw lalu render sebagai HTML
                 const raw = (bubble.dataset.raw || '') + cleanCitation(parsed.text);
                 bubble.dataset.raw = raw;
                 bubble.innerHTML = formatMessage(raw);
@@ -469,20 +522,24 @@
       sendBtn.disabled = false;
     }
 
+    // Mengisi input dengan teks chip lalu langsung mengirim pesan
     function sendChip(el) {
       inputEl.value = el.textContent;
       sendMessage();
     }
 
+    // Kirim pesan dengan Enter (tanpa Shift), Shift+Enter untuk baris baru
     inputEl.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
     });
 
+    // Auto-resize textarea sesuai konten, maksimal 100px
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
     });
 
+    // Inisialisasi thread saat halaman pertama kali dimuat
     initThread();
   </script>
 </body>
