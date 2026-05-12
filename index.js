@@ -10,6 +10,8 @@ const openai = new OpenAI({
 const { createAssistant } = require("./openai.service");
 app.use(cors());
 app.use(bodyParser.json());
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 
 (async () => {
   const assistant = await createAssistant(openai);
