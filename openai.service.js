@@ -19,7 +19,7 @@ Semua informasi ada di dokumen yang telah disediakan. Jika pertanyaan di luar ko
 PENTING: Jangan pernah tampilkan citation, referensi, atau tanda kurung seperti [angka†nama_file] dalam jawabanmu. Jawab langsung tanpa menyebut sumber dokumen apapun.`,
       tools: [{ type: "file_search" }],
       tool_resources: { file_search: { vector_store_ids: [vectorStore.id] } },
-      model: "gpt-4o",
+      model: "gpt-4o-mini",
     });
     fs.writeFileSync(assistantFilePath, JSON.stringify(assistant));
     return assistant;
