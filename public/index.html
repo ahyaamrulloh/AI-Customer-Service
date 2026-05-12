@@ -15,11 +15,15 @@
 
     body {
       font-family: Arial, sans-serif;
-      background: #f5f0eb;
+      background: transparent;
+      /* PENTING: Agar iframe terlihat rapi */
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      /* Mencegah scroll double */
     }
 
     #app {
@@ -86,6 +90,25 @@
       flex-direction: column;
       gap: 12px;
       background: #faf6f2;
+
+      /* SOLUSI SCROLLBAR: Untuk Chrome, Safari, Edge */
+      scrollbar-width: thin;
+      /* Untuk Firefox */
+    }
+
+    /* Mempercantik tampilan scrollbar agar tipis dan estetik */
+    #messages::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background: #d1b8a0;
+      /* Warna cokelat muda senada tema kopi */
+      border-radius: 10px;
     }
 
     .msg {

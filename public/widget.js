@@ -2,45 +2,54 @@
   const CHATBOT_URL = document.currentScript.src.replace("/widget.js", "/");
 
   const style = document.createElement("style");
+  // Cari bagian ini di widget.js dan timpa isinya:
   style.textContent = `
-    #kn-widget-btn {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: #4A2C2A;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-      z-index: 99999;
-      font-size: 26px;
-      transition: transform 0.2s;
-    }
-    #kn-widget-btn:hover { transform: scale(1.1); }
+  #kn-widget-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #4A2C2A;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    z-index: 999999;
+    font-size: 26px;
+    transition: transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #kn-widget-btn:hover { transform: scale(1.1); }
+  
+  #kn-widget-frame {
+    position: fixed;
+    bottom: 95px; /* Jarak dari tombol */
+    right: 24px;
+    width: 400px;
+    height: 600px; 
+    max-height: 75vh; /* SOLUSI: Batasi tinggi agar tidak kena Navbar */
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 999998;
+    display: none;
+    transition: opacity 0.3s ease;
+  }
+
+  @media (max-width: 480px) {
     #kn-widget-frame {
-      position: fixed;
-      bottom: 90px;
-      right: 24px;
-      width: 400px;
-      height: 580px;
-      border: none;
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      z-index: 99998;
-      display: none;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100vh !important;
+      bottom: 0;
+      right: 0;
+      border-radius: 0;
     }
-    @media (max-width: 480px) {
-      #kn-widget-frame {
-        width: 100vw;
-        height: 100vh;
-        bottom: 0;
-        right: 0;
-        border-radius: 0;
-      }
-    }
-  `;
+  }
+`;
   document.head.appendChild(style);
 
   const btn = document.createElement("button");
