@@ -22,6 +22,7 @@ const ALLOWED_ORIGINS = [
   "https://www.coffeenusantara.com", // Versi www
   "http://localhost:8080", // Untuk development lokal kamu
   "http://localhost:3000", // Kalau client pakai port lain saat dev
+  "https://ai-customer-service-production-0725.up.railway.app", // URL Railway (ganti dengan URL kamu)
 ];
 
 app.use(
