@@ -56,21 +56,22 @@
 
     /* ─── MOBILE ─── */
     @media (max-width: 480px) {
-      #kn-widget-frame {
-        /* Di mobile: popup kecil di atas tombol, bukan fullscreen */
-        width: calc(100vw - 32px);  /* Lebar penuh dikurangi margin kiri-kanan */
-        height: 65vh;               /* 65% tinggi layar agar tidak nutup navbar HP */
-        bottom: 90px;
-        right: 16px;
-        left: 16px;
-        border-radius: 16px;
-      }
-
-      #kn-widget-btn {
-        bottom: 16px;
-        right: 16px;
-      }
+    #kn-widget-frame {
+      /* Lebar hampir penuh layar dengan margin kiri-kanan */
+      width: calc(100vw - 32px);
+      /* Tinggi fixed — JANGAN pakai vh agar tidak berubah-ubah */
+      height: 500px;
+      bottom: 90px;
+      right: 16px;
+      left: 16px;
+      border-radius: 16px;
     }
+
+    #kn-widget-btn {
+      bottom: 16px;
+      right: 16px;
+    }
+  }
   `;
   document.head.appendChild(style);
 

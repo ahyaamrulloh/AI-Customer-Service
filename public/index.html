@@ -29,14 +29,26 @@
     #app {
       display: flex;
       flex-direction: column;
+      /* Di desktop: ukuran fixed */
       width: 370px;
-      /* ← Samakan dengan width iframe di widget.js */
       height: 500px;
-      /* ← Samakan dengan height iframe di widget.js */
       background: #fff;
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+    }
+
+    /* Di mobile: lebar ikut layar, tinggi tetap sama dengan iframe */
+    @media (max-width: 480px) {
+      #app {
+        width: 100%;
+        /* Ikuti lebar iframe yang calc(100vw - 32px) */
+        height: 500px;
+        /* Sama persis dengan height iframe di widget.js */
+        border-radius: 16px;
+        box-shadow: none;
+        /* Shadow sudah dari iframe, tidak perlu double */
+      }
     }
 
     #header {
