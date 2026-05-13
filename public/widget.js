@@ -35,7 +35,7 @@
       bottom: 90px;
       right: 24px;
       width: 370px;
-      height: 540px;
+      height: 500px;   /* ← Dikurangi dari 540px agar tidak kena navbar client */
       border: none;
       border-radius: 16px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.25);
