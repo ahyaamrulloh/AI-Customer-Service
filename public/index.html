@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Judul tab browser -->
   <title>AI Assistant</title>
   <style>
     * {
@@ -16,20 +15,16 @@
     body {
       font-family: Arial, sans-serif;
       background: transparent;
-      /* PENTING: Agar iframe terlihat rapi */
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      /* overflow: hidden; */
-      /* Mencegah scroll double */
     }
 
     #app {
       display: flex;
       flex-direction: column;
-      /* Di desktop: ukuran fixed */
       width: 370px;
       height: 500px;
       background: #fff;
@@ -38,16 +33,12 @@
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
     }
 
-    /* Di mobile: lebar ikut layar, tinggi tetap sama dengan iframe */
     @media (max-width: 480px) {
       #app {
         width: 100%;
-        /* Ikuti lebar iframe yang calc(100vw - 32px) */
         height: 500px;
-        /* Sama persis dengan height iframe di widget.js */
         border-radius: 16px;
         box-shadow: none;
-        /* Shadow sudah dari iframe, tidak perlu double */
       }
     }
 
@@ -72,7 +63,6 @@
       font-size: 18px;
     }
 
-    /* Nama assistant di header */
     #header-info p {
       font-size: 14px;
       font-weight: 600;
@@ -87,7 +77,6 @@
       gap: 4px;
     }
 
-    /* Indikator status online (titik hijau) */
     #status-dot {
       width: 7px;
       height: 7px;
@@ -104,26 +93,12 @@
       flex-direction: column;
       gap: 12px;
       background: #faf6f2;
-
-      /* SOLUSI SCROLLBAR: Untuk Chrome, Safari, Edge */
       scrollbar-width: thin;
-      /* Untuk Firefox */
     }
 
-    /* Mempercantik tampilan scrollbar agar tipis dan estetik */
-    #messages::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    #messages::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    #messages::-webkit-scrollbar-thumb {
-      background: #d1b8a0;
-      /* Warna cokelat muda senada tema kopi */
-      border-radius: 10px;
-    }
+    #messages::-webkit-scrollbar { width: 5px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: #d1b8a0; border-radius: 10px; }
 
     .msg {
       display: flex;
@@ -131,15 +106,8 @@
       max-width: 78%;
     }
 
-    .msg.user {
-      align-self: flex-end;
-      align-items: flex-end;
-    }
-
-    .msg.bot {
-      align-self: flex-start;
-      align-items: flex-start;
-    }
+    .msg.user { align-self: flex-end; align-items: flex-end; }
+    .msg.bot  { align-self: flex-start; align-items: flex-start; }
 
     .bubble {
       padding: 10px 14px;
@@ -150,14 +118,12 @@
       word-break: break-word;
     }
 
-    /* Bubble pesan dari user (kanan, cokelat tua) */
     .msg.user .bubble {
       background: #4A2C2A;
       color: #fff;
       border-bottom-right-radius: 4px;
     }
 
-    /* Bubble pesan dari bot (kiri, putih dengan border) */
     .msg.bot .bubble {
       background: #fff;
       border: 1px solid #e8ddd4;
@@ -165,7 +131,7 @@
       border-bottom-left-radius: 4px;
     }
 
-    /* Link di dalam bubble bot (untuk nomor WA dll) */
+    /* Link di bubble bot — hanya tag <a> yang boleh ada (hasil sanitizeForDOM) */
     .msg.bot .bubble a {
       color: #25D366;
       text-decoration: underline;
@@ -179,7 +145,6 @@
       padding: 0 4px;
     }
 
-    /* Animasi typing indicator (3 titik bergerak) */
     #typing {
       display: none;
       align-self: flex-start;
@@ -200,28 +165,14 @@
       animation: bounce 1.2s infinite;
     }
 
-    .dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes bounce {
-
-      0%,
-      60%,
-      100% {
-        transform: translateY(0)
-      }
-
-      30% {
-        transform: translateY(-6px)
-      }
+      0%, 60%, 100% { transform: translateY(0); }
+      30%            { transform: translateY(-6px); }
     }
 
-    /* Area chips (tombol pertanyaan cepat) */
     #chips {
       display: flex;
       gap: 8px;
@@ -273,11 +224,8 @@
       line-height: 1.4;
     }
 
-    #msg-input:focus {
-      border-color: #7B4F3A;
-    }
+    #msg-input:focus { border-color: #7B4F3A; }
 
-    /* Tombol kirim pesan */
     #send-btn {
       width: 38px;
       height: 38px;
@@ -292,9 +240,7 @@
       transition: background 0.15s;
     }
 
-    #send-btn:hover {
-      background: #7B4F3A;
-    }
+    #send-btn:hover { background: #7B4F3A; }
 
     #send-btn svg {
       width: 18px;
@@ -306,39 +252,28 @@
       stroke-linejoin: round;
     }
 
-    #send-btn:disabled {
-      background: #e8ddd4;
-      cursor: not-allowed;
-    }
-
-    #send-btn:disabled svg {
-      stroke: #a08070;
-    }
+    #send-btn:disabled { background: #e8ddd4; cursor: not-allowed; }
+    #send-btn:disabled svg { stroke: #a08070; }
   </style>
 </head>
 
 <body>
   <div id="app">
-    <!-- Header: nama brand dan status online -->
     <div id="header">
       <div id="avatar">☕</div>
       <div id="header-info">
-        <!-- Update: nama brand disesuaikan -->
         <p>Ai Assistant</p>
         <span><span id="status-dot"></span> online</span>
       </div>
     </div>
 
     <div id="messages">
-      <!-- Pesan sambutan awal dari bot, disesuaikan dengan brand Coffee Nusantara -->
       <div class="msg bot">
-        <div class="bubble">Halo! Selamat datang di Coffee Nusantara. Ada yang bisa saya bantu?
-        </div>
+        <div class="bubble">Halo! Selamat datang di Coffee Nusantara. Ada yang bisa saya bantu?</div>
         <span class="msg-time">Baru saja</span>
       </div>
     </div>
 
-    <!-- Typing indicator: muncul saat bot sedang memproses jawaban -->
     <div id="typing" class="msg bot">
       <div class="bubble">
         <div class="dot"></div>
@@ -347,7 +282,6 @@
       </div>
     </div>
 
-    <!-- Chips: pertanyaan cepat yang relevan dengan produk Coffee Nusantara -->
     <div id="chips">
       <div class="chip" onclick="sendChip(this)">Produk apa saja?</div>
       <div class="chip" onclick="sendChip(this)">Cara order</div>
@@ -368,35 +302,35 @@
   </div>
 
   <script>
-    // Mengambil base URL backend dari origin halaman ini (relatif)
+    // Base URL backend diambil dari origin halaman ini (relatif),
+    // sehingga widget.js yang dipasang di domain lain tetap bisa mengarah ke backend yang benar
     const BACKEND = window.location.origin;
 
-    // Referensi ke elemen-elemen DOM yang sering diakses
+    // Referensi DOM yang sering diakses — diambil sekali di awal agar tidak query DOM berulang kali
     const messagesEl = document.getElementById('messages');
-    const inputEl = document.getElementById('msg-input');
-    const sendBtn = document.getElementById('send-btn');
-    const typingEl = document.getElementById('typing');
-    const chipsEl = document.getElementById('chips');
+    const inputEl    = document.getElementById('msg-input');
+    const sendBtn    = document.getElementById('send-btn');
+    const typingEl   = document.getElementById('typing');
+    const chipsEl    = document.getElementById('chips');
 
-    // Menyimpan thread_id aktif untuk sesi percakapan ini
-    let threadId = null;
+    let threadId  = null;  // Menyimpan thread_id aktif untuk sesi percakapan ini
+    let isWaiting = false; // Flag untuk mencegah pengiriman pesan ganda saat bot masih merespons
 
-    // Flag untuk mencegah pengiriman pesan ganda saat bot masih merespons
-    let isWaiting = false;
-
-    // Mengembalikan waktu sekarang dalam format HH:MM (Indonesia)
+    // ── Helper: waktu sekarang ────────────────────────────────
+    // Mengembalikan waktu dalam format HH:MM (Indonesia)
     function getTime() {
       return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // Membuat elemen bubble kosong untuk pesan bot, lalu menambahkannya ke area chat
-    // Mengembalikan referensi ke elemen bubble agar teks bisa diisi secara streaming
+    // ── Helper: buat bubble bot kosong ───────────────────────
+    // Membuat elemen bubble kosong untuk pesan bot dan langsung menambahkannya ke area chat.
+    // Mengembalikan referensi elemen bubble agar teks bisa diisi secara streaming (karakter per karakter).
     function createBotBubble() {
-      const div = document.createElement('div');
+      const div    = document.createElement('div');
       div.className = 'msg bot';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      const time = document.createElement('span');
+      const time   = document.createElement('span');
       time.className = 'msg-time';
       time.textContent = getTime();
       div.appendChild(bubble);
@@ -405,107 +339,159 @@
       return bubble;
     }
 
-    // Menambahkan bubble pesan user (kanan) ke area chat
+    // ── Helper: tampilkan pesan user ─────────────────────────
+    // Menambahkan bubble pesan user (sisi kanan) ke area chat
     function appendUserMsg(text) {
-      const div = document.createElement('div');
+      const div    = document.createElement('div');
       div.className = 'msg user';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      bubble.textContent = text;
-      const time = document.createElement('span');
+      bubble.textContent = text; // textContent aman — tidak parse HTML
+      const time   = document.createElement('span');
       time.className = 'msg-time';
       time.textContent = getTime();
       div.appendChild(bubble);
       div.appendChild(time);
       messagesEl.appendChild(div);
-      // Scroll otomatis ke bawah agar pesan terbaru terlihat
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      messagesEl.scrollTop = messagesEl.scrollHeight; // Scroll otomatis ke pesan terbaru
     }
 
-    // Menampilkan atau menyembunyikan animasi typing (3 titik bergerak)
+    // ── Helper: typing indicator ─────────────────────────────
+    // Menampilkan atau menyembunyikan animasi 3 titik bergerak saat bot sedang memproses
     function setTyping(show) {
       typingEl.style.display = show ? 'flex' : 'none';
       if (show) messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    // Menghapus pola citation seperti 【16:2†knowledge.docx】 dari teks bot
+    // ── Helper: bersihkan citation ───────────────────────────
+    // Menghapus pola citation seperti 【16:2†knowledge.docx】 yang kadang muncul dari OpenAI
     function cleanCitation(text) {
-      return text.replace(/【[^】]*】/g, '').replace(/\[\d+:\d+[^\]]*\]/g, '');
+      return text
+        .replace(/【[^】]*】/g, '')       // Format citation OpenAI Assistants API
+        .replace(/\[\d+:\d+[^\]]*\]/g, ''); // Format citation alternatif
     }
 
-    // Mengubah karakter HTML khusus menjadi entitas HTML untuk mencegah XSS
+    // ── Helper: escape HTML ──────────────────────────────────
+    // Mengubah karakter HTML khusus menjadi entitas HTML yang aman
+    // Ini adalah langkah pertama sebelum teks bot ditampilkan ke DOM
     function escapeHtml(text) {
       return text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
     }
 
-    // Memformat teks bot: mengubah nomor WA dan link markdown menjadi tag <a> yang bisa diklik
+    // ── Helper: format teks bot ──────────────────────────────
+    // Mengubah plain text bot menjadi HTML yang aman:
+    // 1. Escape semua karakter HTML terlebih dahulu (mencegah XSS)
+    // 2. Ubah markdown link [label](url) → <a href>
+    // 3. Ubah nomor WA Indonesia → link wa.me yang bisa diklik
     function formatMessage(text) {
       let out = escapeHtml(text);
 
-      // Ubah format markdown link [label](url) menjadi <a href>
+      // Ubah format markdown link menjadi tag <a> yang bisa diklik
       out = out.replace(
-        /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,
-        (match, label, url) => '<a href="' + url + '" target="_blank">' + label + '</a>'
+        /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        (_, label, url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`
       );
 
-      // Ubah nomor WhatsApp Indonesia menjadi link wa.me yang langsung bisa diklik
+      // Ubah nomor WhatsApp Indonesia menjadi link wa.me langsung bisa diklik
       out = out.replace(
-        /(\+62|62|0)([\s-]?8[\d\s-]{8,11})/g,
+        /(\+62|62|0)([\s\-]?8[\d\s\-]{8,11})/g,
         (match) => {
-          const clean = match.replace(/[\s-]/g, '').replace(/^0/, '62').replace(/^\+/, '');
-          return '<a href="https://wa.me/' + clean + '" target="_blank">' + match + '</a>';
+          const clean = match.replace(/[\s\-]/g, '').replace(/^0/, '62').replace(/^\+/, '');
+          return `<a href="https://wa.me/${clean}" target="_blank" rel="noopener noreferrer">${match}</a>`;
         }
       );
 
       return out;
     }
 
-    // Memanggil endpoint /start untuk mendapatkan thread_id baru saat halaman pertama dibuka
+    // ── Helper: sanitasi DOM output ──────────────────────────
+    // Lapisan keamanan terakhir sebelum HTML dari formatMessage dimasukkan ke DOM via innerHTML.
+    // Fungsi ini hanya mengizinkan tag <a> dengan atribut href dan target yang aman.
+    // Semua tag lain (termasuk <script>, <img>, <iframe>) dihapus dan diganti teks biasa.
+    // Ini mencegah XSS jika ada teks berbahaya yang lolos dari escapeHtml.
+    function sanitizeForDOM(html) {
+      const temp = document.createElement('div');
+      temp.innerHTML = html; // Parse HTML ke DOM sementara
+
+      // Iterasi semua elemen dalam DOM sementara
+      temp.querySelectorAll('*').forEach(el => {
+        if (el.tagName === 'A') {
+          // Untuk tag <a>: hanya izinkan href yang dimulai dengan https:// atau http://
+          const href = el.getAttribute('href') || '';
+          if (!href.startsWith('https://') && !href.startsWith('http://')) {
+            // Jika href mencurigakan (javascript:, data:, dll) → hapus tag, sisakan teksnya
+            el.replaceWith(document.createTextNode(el.textContent));
+            return;
+          }
+          // Hapus semua atribut kecuali href, target, rel — mencegah event handler berbahaya (onclick, onerror, dll)
+          [...el.attributes].forEach(attr => {
+            if (!['href', 'target', 'rel'].includes(attr.name)) {
+              el.removeAttribute(attr.name);
+            }
+          });
+          // Paksa target="_blank" dan rel="noopener noreferrer" untuk keamanan tab baru
+          el.setAttribute('target', '_blank');
+          el.setAttribute('rel', 'noopener noreferrer');
+        } else {
+          // Semua tag selain <a> (termasuk <script>, <b>, <img>, dll) → hapus, sisakan teks saja
+          el.replaceWith(document.createTextNode(el.textContent));
+        }
+      });
+
+      return temp.innerHTML;
+    }
+
+    // ── Init: buat sesi baru ─────────────────────────────────
+    // Memanggil /start saat halaman pertama dibuka untuk mendapatkan thread_id unik.
+    // Thread_id ini dikirim bersama setiap pesan agar server tahu percakapan siapa ini.
     async function initThread() {
       try {
-        const res = await fetch(`${BACKEND}/start`);
+        const res  = await fetch(`${BACKEND}/start`);
         const data = await res.json();
-        threadId = data.thread_id;
+        threadId   = data.thread_id;
       } catch {
-        // Jika gagal konek ke backend, set threadId ke 'demo' sebagai fallback
+        // Jika gagal konek ke backend, set 'demo' sebagai tanda error
+        // Frontend akan menampilkan pesan error yang ramah
         threadId = 'demo';
       }
     }
 
-    // Fungsi utama: mengirim pesan user ke backend dan menampilkan streaming response dari bot
+    // ── Fungsi utama: kirim pesan ────────────────────────────
+    // Alur: validasi input → tampilkan pesan user → kirim ke backend → tampilkan streaming response
     async function sendMessage() {
       const text = inputEl.value.trim();
 
       // Abaikan jika input kosong atau bot masih memproses pesan sebelumnya
       if (!text || isWaiting) return;
 
-      // Sembunyikan chips setelah user mulai mengetik
+      // Sembunyikan chips setelah user mulai berinteraksi — tidak perlu tampil lagi
       chipsEl.style.display = 'none';
 
       appendUserMsg(text);
       inputEl.value = '';
       inputEl.style.height = 'auto';
 
-      isWaiting = true;
+      isWaiting       = true;
       sendBtn.disabled = true;
       setTyping(true);
 
-      // Tampilkan error jika koneksi ke backend gagal saat init
+      // Tampilkan pesan error jika inisialisasi thread gagal
       if (!threadId || threadId === 'demo') {
-        await new Promise(r => setTimeout(r, 900));
+        await new Promise(r => setTimeout(r, 800));
         setTyping(false);
         const bubble = createBotBubble();
-        bubble.textContent = 'Maaf, tidak dapat terhubung ke server. Pastikan backend sudah berjalan di port 8080.';
-        isWaiting = false;
+        bubble.textContent = 'Maaf, tidak dapat terhubung ke server. Pastikan backend sudah berjalan.';
+        isWaiting       = false;
         sendBtn.disabled = false;
         return;
       }
 
       try {
-        // Kirim pesan ke endpoint /chat via POST
+        // Kirim pesan ke /chat via HTTP POST
         const res = await fetch(`${BACKEND}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -513,70 +499,83 @@
         });
 
         setTyping(false);
-        const bubble = createBotBubble();
+        const bubble   = createBotBubble();
         bubble.textContent = '';
 
-        // Membaca response streaming (SSE) kata per kata
-        const reader = res.body.getReader();
+        // ── Baca SSE stream ──────────────────────────────────
+        // Response dari server adalah stream SSE yang dikirim potongan demi potongan.
+        // Kita baca menggunakan ReadableStream API agar teks muncul real-time.
+        const reader  = res.body.getReader();
         const decoder = new TextDecoder();
-        let buffer = '';
+        let buffer    = '';
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          // Decode chunk binary menjadi string, stream: true agar multi-byte char aman
+          // Decode bytes → string, stream: true agar karakter multi-byte (emoji, dll) tidak terpotong
           buffer += decoder.decode(value, { stream: true });
+
+          // SSE menggunakan "\n" sebagai pemisah event — split dan proses per baris
           const lines = buffer.split('\n');
 
-          // Sisakan baris terakhir di buffer jika belum lengkap (belum ada \n)
+          // Baris terakhir mungkin belum lengkap (belum ada \n di akhir) — simpan ke buffer
           buffer = lines.pop();
 
           for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            const data = line.slice(6).trim();
-            if (data === '[DONE]') break;
+            if (!line.startsWith('data: ')) continue; // Abaikan baris non-data SSE
+
+            const data = line.slice(6).trim(); // Ambil konten setelah "data: "
+            if (data === '[DONE]') break;       // Sinyal stream selesai dari server
+
             try {
               const parsed = JSON.parse(data);
               if (parsed.text) {
-                // Akumulasi teks ke dataset.raw lalu render sebagai HTML
+                // Akumulasi teks mentah di dataset.raw agar format ulang saat teks bertambah
                 const raw = (bubble.dataset.raw || '') + cleanCitation(parsed.text);
                 bubble.dataset.raw = raw;
-                bubble.innerHTML = formatMessage(raw);
-                messagesEl.scrollTop = messagesEl.scrollHeight;
+                // Render HTML yang sudah diformat DAN disanitasi ke DOM
+                bubble.innerHTML = sanitizeForDOM(formatMessage(raw));
+                messagesEl.scrollTop = messagesEl.scrollHeight; // Scroll ke teks terbaru
               }
-            } catch { }
+            } catch { /* Abaikan chunk JSON yang corrupt */ }
           }
         }
 
-      } catch (err) {
+      } catch {
+        // Tangkap error jaringan (offline, server down, dll)
         setTyping(false);
         const bubble = createBotBubble();
         bubble.textContent = 'Koneksi ke server gagal. Pastikan backend sudah berjalan.';
       }
 
-      isWaiting = false;
+      isWaiting       = false;
       sendBtn.disabled = false;
     }
 
+    // ── Chip: kirim pesan dari tombol cepat ─────────────────
     // Mengisi input dengan teks chip lalu langsung mengirim pesan
     function sendChip(el) {
       inputEl.value = el.textContent;
       sendMessage();
     }
 
-    // Kirim pesan dengan Enter (tanpa Shift), Shift+Enter untuk baris baru
+    // ── Event: Enter untuk kirim, Shift+Enter untuk baris baru ──
     inputEl.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault(); // Cegah newline default dari Enter
+        sendMessage();
+      }
     });
 
-    // Auto-resize textarea sesuai konten, maksimal 100px
+    // ── Event: auto-resize textarea sesuai konten ────────────
+    // Textarea akan membesar saat user mengetik banyak, maksimal 100px
     inputEl.addEventListener('input', () => {
       inputEl.style.height = 'auto';
       inputEl.style.height = Math.min(inputEl.scrollHeight, 100) + 'px';
     });
 
-    // Inisialisasi thread saat halaman pertama kali dimuat
+    // ── Bootstrap: inisialisasi thread saat halaman dimuat ───
     initThread();
   </script>
 </body>
