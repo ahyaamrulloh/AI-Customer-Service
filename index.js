@@ -48,7 +48,7 @@ try {
   // agar tidak langsung crash dan memudahkan debugging
   console.warn(`[PROMPT] File tidak ditemukan: ${PROMPT_FILE} — menggunakan fallback`);
   SYSTEM_PROMPT =
-    "Kamu adalah AI Assistant yang ramah dan membantu. Jawab pertanyaan dengan sopan dalam Bahasa Indonesia.";
+    "Kamu adalah Sales Terbaik di dunia yang ramah dan membantu. Jawab pertanyaan dengan sopan dalam Bahasa Indonesia.";
 }
 
 // ─────────────────────────────────────────────

@@ -61,6 +61,17 @@
       justify-content: center;
       flex-shrink: 0;
       font-size: 18px;
+      overflow: hidden;
+    }
+
+
+    /* ← tambahkan rule baru ini */
+    #avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
     }
 
     #header-info p {
@@ -96,9 +107,18 @@
       scrollbar-width: thin;
     }
 
-    #messages::-webkit-scrollbar { width: 5px; }
-    #messages::-webkit-scrollbar-track { background: transparent; }
-    #messages::-webkit-scrollbar-thumb { background: #d1b8a0; border-radius: 10px; }
+    #messages::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background: #d1b8a0;
+      border-radius: 10px;
+    }
 
     .msg {
       display: flex;
@@ -106,8 +126,15 @@
       max-width: 78%;
     }
 
-    .msg.user { align-self: flex-end; align-items: flex-end; }
-    .msg.bot  { align-self: flex-start; align-items: flex-start; }
+    .msg.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
 
     .bubble {
       padding: 10px 14px;
@@ -165,12 +192,25 @@
       animation: bounce 1.2s infinite;
     }
 
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
+    .dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
 
     @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30%            { transform: translateY(-6px); }
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+      }
+
+      30% {
+        transform: translateY(-6px);
+      }
     }
 
     #chips {
@@ -224,7 +264,9 @@
       line-height: 1.4;
     }
 
-    #msg-input:focus { border-color: #7B4F3A; }
+    #msg-input:focus {
+      border-color: #7B4F3A;
+    }
 
     #send-btn {
       width: 38px;
@@ -240,7 +282,9 @@
       transition: background 0.15s;
     }
 
-    #send-btn:hover { background: #7B4F3A; }
+    #send-btn:hover {
+      background: #7B4F3A;
+    }
 
     #send-btn svg {
       width: 18px;
@@ -252,15 +296,23 @@
       stroke-linejoin: round;
     }
 
-    #send-btn:disabled { background: #e8ddd4; cursor: not-allowed; }
-    #send-btn:disabled svg { stroke: #a08070; }
+    #send-btn:disabled {
+      background: #e8ddd4;
+      cursor: not-allowed;
+    }
+
+    #send-btn:disabled svg {
+      stroke: #a08070;
+    }
   </style>
 </head>
 
 <body>
   <div id="app">
     <div id="header">
-      <div id="avatar">☕</div>
+      <div id="avatar">
+        <img src="robot.jpg.jpg" alt="">
+      </div>
       <div id="header-info">
         <p>Ai Assistant</p>
         <span><span id="status-dot"></span> online</span>
@@ -269,7 +321,7 @@
 
     <div id="messages">
       <div class="msg bot">
-        <div class="bubble">Halo! Selamat datang di Coffee Nusantara. Ada yang bisa saya bantu?</div>
+        <div class="bubble">Halo! Selamat datang di Hijup. Ada yang bisa saya bantu?</div>
         <span class="msg-time">Baru saja</span>
       </div>
     </div>
@@ -286,7 +338,7 @@
       <div class="chip" onclick="sendChip(this)">Produk apa saja?</div>
       <div class="chip" onclick="sendChip(this)">Cara order</div>
       <div class="chip" onclick="sendChip(this)">Jam operasional</div>
-      <div class="chip" onclick="sendChip(this)">Produk halal?</div>
+      <div class="chip" onclick="sendChip(this)">Promo?</div>
       <div class="chip" onclick="sendChip(this)">Info pengiriman</div>
     </div>
 
@@ -308,12 +360,12 @@
 
     // Referensi DOM yang sering diakses — diambil sekali di awal agar tidak query DOM berulang kali
     const messagesEl = document.getElementById('messages');
-    const inputEl    = document.getElementById('msg-input');
-    const sendBtn    = document.getElementById('send-btn');
-    const typingEl   = document.getElementById('typing');
-    const chipsEl    = document.getElementById('chips');
+    const inputEl = document.getElementById('msg-input');
+    const sendBtn = document.getElementById('send-btn');
+    const typingEl = document.getElementById('typing');
+    const chipsEl = document.getElementById('chips');
 
-    let threadId  = null;  // Menyimpan thread_id aktif untuk sesi percakapan ini
+    let threadId = null;  // Menyimpan thread_id aktif untuk sesi percakapan ini
     let isWaiting = false; // Flag untuk mencegah pengiriman pesan ganda saat bot masih merespons
 
     // ── Helper: waktu sekarang ────────────────────────────────
@@ -326,11 +378,11 @@
     // Membuat elemen bubble kosong untuk pesan bot dan langsung menambahkannya ke area chat.
     // Mengembalikan referensi elemen bubble agar teks bisa diisi secara streaming (karakter per karakter).
     function createBotBubble() {
-      const div    = document.createElement('div');
+      const div = document.createElement('div');
       div.className = 'msg bot';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      const time   = document.createElement('span');
+      const time = document.createElement('span');
       time.className = 'msg-time';
       time.textContent = getTime();
       div.appendChild(bubble);
@@ -342,12 +394,12 @@
     // ── Helper: tampilkan pesan user ─────────────────────────
     // Menambahkan bubble pesan user (sisi kanan) ke area chat
     function appendUserMsg(text) {
-      const div    = document.createElement('div');
+      const div = document.createElement('div');
       div.className = 'msg user';
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
       bubble.textContent = text; // textContent aman — tidak parse HTML
-      const time   = document.createElement('span');
+      const time = document.createElement('span');
       time.className = 'msg-time';
       time.textContent = getTime();
       div.appendChild(bubble);
@@ -450,9 +502,9 @@
     // Thread_id ini dikirim bersama setiap pesan agar server tahu percakapan siapa ini.
     async function initThread() {
       try {
-        const res  = await fetch(`${BACKEND}/start`);
+        const res = await fetch(`${BACKEND}/start`);
         const data = await res.json();
-        threadId   = data.thread_id;
+        threadId = data.thread_id;
       } catch {
         // Jika gagal konek ke backend, set 'demo' sebagai tanda error
         // Frontend akan menampilkan pesan error yang ramah
@@ -475,7 +527,7 @@
       inputEl.value = '';
       inputEl.style.height = 'auto';
 
-      isWaiting       = true;
+      isWaiting = true;
       sendBtn.disabled = true;
       setTyping(true);
 
@@ -485,7 +537,7 @@
         setTyping(false);
         const bubble = createBotBubble();
         bubble.textContent = 'Maaf, tidak dapat terhubung ke server. Pastikan backend sudah berjalan.';
-        isWaiting       = false;
+        isWaiting = false;
         sendBtn.disabled = false;
         return;
       }
@@ -499,15 +551,15 @@
         });
 
         setTyping(false);
-        const bubble   = createBotBubble();
+        const bubble = createBotBubble();
         bubble.textContent = '';
 
         // ── Baca SSE stream ──────────────────────────────────
         // Response dari server adalah stream SSE yang dikirim potongan demi potongan.
         // Kita baca menggunakan ReadableStream API agar teks muncul real-time.
-        const reader  = res.body.getReader();
+        const reader = res.body.getReader();
         const decoder = new TextDecoder();
-        let buffer    = '';
+        let buffer = '';
 
         while (true) {
           const { done, value } = await reader.read();
@@ -549,7 +601,7 @@
         bubble.textContent = 'Koneksi ke server gagal. Pastikan backend sudah berjalan.';
       }
 
-      isWaiting       = false;
+      isWaiting = false;
       sendBtn.disabled = false;
     }
 
