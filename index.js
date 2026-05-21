@@ -56,10 +56,6 @@ try {
 // Whitelist domain yang boleh mengakses backend ini.
 // Domain di luar daftar akan langsung ditolak dengan error.
 // ─────────────────────────────────────────────
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
 
 // Tambahkan origin default untuk development agar tidak error saat lokal
 const DEFAULT_DEV_ORIGINS = [
@@ -67,6 +63,7 @@ const DEFAULT_DEV_ORIGINS = [
   "http://localhost:3000",
   "http://127.0.0.1:5500",
   "http://127.0.0.1:5501",
+  "https://ai-customer-service-production-0725.up.railway.app"
 ];
 
 // Gabungkan origin dari .env dengan origin development default
