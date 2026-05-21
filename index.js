@@ -67,7 +67,7 @@ const DEFAULT_DEV_ORIGINS = [
 ];
 
 // Gabungkan origin dari .env dengan origin development default
-const ALL_ORIGINS = [...new Set([...ALLOWED_ORIGINS, ...DEFAULT_DEV_ORIGINS])];
+const ALL_ORIGINS = [...DEFAULT_DEV_ORIGINS];
 
 app.use(
   cors({
