@@ -63,7 +63,7 @@ const DEFAULT_DEV_ORIGINS = [
   "http://localhost:3000",
   "http://127.0.0.1:5500",
   "http://127.0.0.1:5501",
-  "https://ai-customer-service-production-0725.up.railway.app"
+  "https://ai-customer-service-eight.vercel.app",
 ];
 
 // Gabungkan origin dari .env dengan origin development default
